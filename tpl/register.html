@@ -1,0 +1,147 @@
+{{define "/register.html"}}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    {{template "head" .}}
+
+    <style type="text/css">
+        .container{
+            width: 420px;
+            height: 339px;
+            min-height: 320px;
+            max-height: 366px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            padding: 20px;
+            z-index: 130;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 3px 18px rgba(100, 0, 0, .5);
+            font-size: 16px;
+        }
+        .close{
+            background-color: white;
+            border: none;
+            font-size: 18px;
+            margin-left: 410px;
+            margin-top: -10px;
+        }
+
+        .layui-input{
+            border-radius: 5px;
+            width: 300px;
+            height: 40px;
+            font-size: 15px;
+        }
+        .layui-form-item{
+            margin-left: -20px;
+        }
+        #logoid{
+            margin-top: -16px;
+            padding-left:150px;
+            padding-bottom: 15px;
+        }
+        .layui-btn{
+            margin-left: -50px;
+            border-radius: 5px;
+            width: 350px;
+            height: 40px;
+            font-size: 15px;
+        }
+        .verity{
+            width: 120px;
+        }
+        .font-set{
+            font-size: 13px;
+            text-decoration: none;
+            margin-left: 120px;
+        }
+        a:hover{
+            text-decoration: underline;
+        }
+
+    </style>
+
+    <body>
+
+        <div class="container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id = "username" name="username" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">密 &nbsp;&nbsp;码</label>
+                <div class="layui-input-inline">
+                    <input type="password" id = "password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">验证码</label>
+                <div class="layui-input-inline">
+
+                    <input type="text" id="code_input" name="vef" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input verity">
+                    <div id="v_container" style="width: 150px;height: 50px;">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-input-block">
+                <div class="layui-input-block">
+                <button id="my_button" class="layui-btn" style="margin-left: -207px;">立即注册</button>
+                </div>
+            </div>
+
+            <a href="login" class="layui-btn layui-btn-radius" style="width: 98px;
+    margin-left: 262px;
+    margin-top: 10px;">返回登录</a>
+        </div>
+
+    </body>
+
+
+    <script>
+        require(["jquery","gVerify","layui"],function () {
+
+            var verifyCode = new GVerify("v_container");
+            var layer;
+            layui.use('layer', function(){
+                layer = layui.layer;
+            });
+
+            $("#my_button").on("click",function () {
+            var value =  $("#code_input").val();
+             var res = verifyCode.validate(value);
+             if(res){
+                 var data = {
+                     "username":$("#username").val(),
+                     "password":$("#password").val(),
+                 }
+                 // $.post("/register",data,function (data) {
+                 //     console.log(data)
+                 // });
+
+             }else{
+                 layer.msg("验证码错误")
+             }
+         })
+
+        })
+
+    </script>
+
+
+    </html>
+
+
+
+
+{{end}}
