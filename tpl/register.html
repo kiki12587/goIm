@@ -125,9 +125,9 @@
                      "username":$("#username").val(),
                      "password":$("#password").val(),
                  }
-                 // $.post("/register",data,function (data) {
-                 //     console.log(data)
-                 // });
+                 $.post("/register",data,function (data) {
+                     console.log(data)
+                 });
 
              }else{
                  layer.msg("验证码错误")
