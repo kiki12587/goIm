@@ -1,6 +1,13 @@
 package dao
 
-type Register struct {
-	Username string `json:"username" form:"username"`
-	Password string `json:"password"  form:"password"`
+type RegisterModel struct {
+	Groupid       int    `json:"groupid" column:"groupid" form:"groupid"`
+	Username      string `json:"username" column:"username" form:"username" `
+	Password      string `json:"password" column:"password" form:"password"`
+	Joindate      int64  `json:"joindate" column:"joindate" form:"joindate"`
+	Joinip        string `json:"joinip" column:"joinip" form:"joinip"`
+	Register_type int    `json:"register_type" column:"register_type" form:"register_type"`
+	Remark        string `json:"remark" column:"remark" form:"remark"`
+	Openid        string `json:"openid" column:"openid" form:"openid"`
+	Status        int    `json:"status" column:"status" form:"status"`
 }

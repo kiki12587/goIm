@@ -35,11 +35,12 @@ func InitWebHtml() (err error) {
 	})
 
 	r.POST("/register", func(c *gin.Context) {
-		var reg dao.Register
-		err := c.ShouldBind(&reg)
-		register, err := controller.UserRegister(&reg)
-		fmt.Printf("密码:%v\n", register)
-		if err == nil {
+		var reg dao.RegisterModel
+		reg.Joinip = c.ClientIP()
+		_ = c.ShouldBind(&reg)
+		fmt.Printf("%#v\n", reg)
+		ok := controller.UserRegister(&reg)
+		if ok {
 			c.JSON(http.StatusOK, gin.H{
 				"username": reg.Username,
 				"password": reg.Password,

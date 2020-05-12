@@ -15,7 +15,7 @@ func main() {
 	go model.InitModel()
 
 	for {
-		time.Sleep(500 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 
 }
