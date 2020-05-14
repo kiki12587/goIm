@@ -69,40 +69,96 @@
 
     <body>
 
-    <form class="layui-form" action="" method="post">
         <div class="container">
             <div class="layui-form-item">
                 <label class="layui-form-label">用户名</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="title" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                    <input type="text" id = "username" name="title" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">密 &nbsp;&nbsp;码</label>
                 <div class="layui-input-inline">
-                    <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                    <input type="password"  id = "password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
                 </div>
 
             </div>
+
             <div class="layui-form-item">
                 <label class="layui-form-label">验证码</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="title" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input verity">
+
+                    <input type="text" id="code_input" name="vef" required  lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input verity">
+                    <div id="v_container" style="width: 150px;height: 50px;">
+
+                    </div>
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button class="layui-btn" lay-submit lay-filter="formDemo">登陆</button>
+                    <button id = "login" class="layui-btn" lay-submit lay-filter="formDemo">登陆</button>
                 </div>
             </div>
             <a href="" class="font-set">忘记密码?</a>  <a href="/register" class="font-set">立即注册</a>
         </div>
-    </form>
-
 
     </body>
 
+
+
+        <script>
+            require(["jquery","gVerify","layui"],function () {
+
+                var verifyCode = new GVerify("v_container");
+                var layer;
+                layui.use('layer', function(){
+                    layer = layui.layer;
+                });
+
+
+                $("#login").on("click",function(){
+
+                    var value =  $("#code_input").val();
+                    var res = verifyCode.validate(value);
+                    if(res){
+                        //用户登录
+                        userLogin()
+                    }else{
+                        layer.msg("验证码错误")
+                    }
+                })
+            });
+
+           function userLogin(){
+               var username,password;
+               username = $("#username").val().trim()
+               password = $("#password").val().trim()
+               if(username.length == 0){
+                   layer.msg("请输入用户名")
+               }
+               if(password.length == 0){
+                   layer.msg("请输入密码")
+               }
+               var post =
+                   {
+                       "username":username,
+                       "password":password
+                   }
+
+               $.ajax({
+                   url: "/login",
+                   data: post,
+                   type: "post",
+                   dataType: "json",
+                   success: function (data) {
+                       console.log(123,data);
+                   }
+               });
+           }
+        </script>
+    
     </html>
 {{end}}
+

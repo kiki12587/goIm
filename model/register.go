@@ -19,3 +19,21 @@ func SaveUserInfo(user *dao.RegisterModel) (ok bool) {
 	_ = G_db.Debug().Table("goim_users").Create(&user)
 	return true
 }
+
+/**
+校验用户信息
+*/
+
+func CheckUserInfo(user *dao.RegisterModel) (cookie string, ok bool) {
+	var userStatus dao.RegisterModel
+	userStatus = dao.RegisterModel{}
+	G_db.Table("goim_users").Select("*").Where("username = ? and password = ?", user.Username, user.Password).Limit(1).Scan(&userStatus)
+	if len(userStatus.Openid) == 0 {
+		cookie = ""
+		ok = false
+	}
+	cookie = userStatus.Openid
+	ok = true
+	return
+
+}
