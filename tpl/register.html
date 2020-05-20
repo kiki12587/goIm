@@ -70,9 +70,9 @@
 
         <div class="container">
             <div class="layui-form-item">
-                <label class="layui-form-label">用户名</label>
+                <label class="layui-form-label">邮箱</label>
                 <div class="layui-input-inline">
-                    <input type="text" id = "username" name="username" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                    <input type="text" id = "username" name="username" required  lay-verify="required" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
@@ -110,7 +110,7 @@
 
 
     <script>
-        require(["jquery","gVerify","layui"],function () {
+        require(["jquery","gVerify","layui","./js/util"],function ($,g,l,util) {
 
             var verifyCode = new GVerify("v_container");
             var layer;
@@ -122,16 +122,49 @@
             var value =  $("#code_input").val();
              var res = verifyCode.validate(value);
              if(res){
-                 var data = {
-                     "username":$("#username").val(),
-                     "password":$("#password").val(),
+                 username = $("#username").val().trim()
+                 password = $("#password").val().trim()
+
+                 if (username.length == 0) {
+                     layer.msg("请输入邮箱")
+                     return;
                  }
-                 $.post("/register",data,function (data) {
-                     console.log(data)
+
+                 if(util.checkMail(username) == false){
+                     layer.msg("请输入正确的邮箱格式")
+                     return;
+                 }
+
+
+                 if (password.length == 0) {
+                     layer.msg("请输入密码")
+                     return;
+                 }
+
+                 if(util.checkS(password) == false){
+                     layer.msg("密码必须由字母加数字组合")
+                     return;
+                 }
+
+                 var data = {
+                     "username":username,
+                     "password":password,
+                 }
+                 $.post("/register",data,function (res) {
+                     if(res.code == 0){
+                         util.setCookie("user", res.data, "d30");
+                         layer.msg(res.msg)
+                         return;
+                     }
+                     if(res.code == 1){
+                         layer.msg(res.msg)
+                         return;
+                     }
                  });
 
              }else{
                  layer.msg("验证码错误")
+                 return;
              }
          })
 

@@ -71,9 +71,9 @@
 
         <div class="container">
             <div class="layui-form-item">
-                <label class="layui-form-label">用户名</label>
+                <label class="layui-form-label">邮箱</label>
                 <div class="layui-input-inline">
-                    <input type="text" id = "username" name="title" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                    <input type="email" id = "username" name="title" required  lay-verify="required" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
@@ -98,18 +98,18 @@
 
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button id = "login" class="layui-btn" lay-submit lay-filter="formDemo">登陆</button>
+                    <button id = "login" class="layui-btn" lay-submit lay-filter="formDemo" style="margin-left: -75px;">登陆</button>
                 </div>
             </div>
-            <a href="" class="font-set">忘记密码?</a>  <a href="/register" class="font-set">立即注册</a>
+            <a href="/changePassword" class="font-set">忘记密码?</a>  <a href="/register" class="font-set">立即注册</a>
         </div>
 
     </body>
 
 
-
         <script>
-            require(["jquery","gVerify","layui"],function () {
+
+            require(["jquery","gVerify","layui","./js/util"],function ($,g,l,util) {
 
                 var verifyCode = new GVerify("v_container");
                 var layer;
@@ -123,42 +123,66 @@
                     var value =  $("#code_input").val();
                     var res = verifyCode.validate(value);
                     if(res){
+                        var username, password;
+                        username = $("#username").val().trim()
+                        password = $("#password").val().trim()
+                        if (username.length == 0) {
+                            layer.msg("请输入邮箱")
+                            return;
+                        }
+
+                        if(util.checkMail(username) == false){
+                            layer.msg("请输入正确的邮箱格式")
+                            return;
+                        }
+
+
+                        if (password.length == 0) {
+                            layer.msg("请输入密码")
+                            return;
+                        }
                         //用户登录
-                        userLogin()
+                        userLogin(username,password)
+                        return;
                     }else{
                         layer.msg("验证码错误")
                     }
                 })
+
+
+            // 用户登录
+            function userLogin(username,password) {
+
+                var post =
+                    {
+                        "username": username,
+                        "password": password
+                    }
+
+                $.ajax({
+                    url: "/login",
+                    data: post,
+                    type: "post",
+                    dataType: "json",
+                    success: function (res) {
+                        if(res.code == 0){
+                            util.setCookie("user", res.data, "d30");
+                            layer.msg(res.msg)
+                            return;
+                        }
+                        if(res.code == 1){
+                            layer.msg(res.msg)
+                            return;
+                        }
+
+
+                    }
+                })
+                };
             });
 
-           function userLogin(){
-               var username,password;
-               username = $("#username").val().trim()
-               password = $("#password").val().trim()
-               if(username.length == 0){
-                   layer.msg("请输入用户名")
-               }
-               if(password.length == 0){
-                   layer.msg("请输入密码")
-               }
-               var post =
-                   {
-                       "username":username,
-                       "password":password
-                   }
-
-               $.ajax({
-                   url: "/login",
-                   data: post,
-                   type: "post",
-                   dataType: "json",
-                   success: function (data) {
-                       console.log(123,data);
-                   }
-               });
-           }
         </script>
-    
+
     </html>
 {{end}}
 

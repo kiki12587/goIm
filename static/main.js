@@ -8,7 +8,10 @@ paths: {
         "amazeui" :"js/amazeui.min",
         "wechat":"js/wechat",
          "zUI" :"js/zUI",
-        "jquerymin":"js/jquery.min"
+        "jquerymin":"js/jquery.min",
+    },
+    shim:{
+
     }
 
 });

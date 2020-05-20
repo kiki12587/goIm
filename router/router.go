@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"goIM/config"
 	"goIM/controller"
@@ -32,6 +31,7 @@ func Validate() gin.HandlerFunc {
 
 //初始化静态资源以及路由
 func InitWebHtml() (err error) {
+
 	r := gin.Default()
 	//r.Use(Validate()) //使用validate()中间件身份验证
 	//防止字符被转义
@@ -44,13 +44,19 @@ func InitWebHtml() (err error) {
 	r.LoadHTMLGlob("tpl/*")
 	r.Static(config.GetEnv().Static, "./static")
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "/index.html", nil)
+
+		c.HTML(http.StatusOK, "/index.html", gin.H{
+			"title": "首页",
+		})
 	})
 
 	r.GET("/login", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "/login.html", nil)
+		c.HTML(http.StatusOK, "/login.html", gin.H{
+			"title": "登录",
+		})
 	})
 
+	//登录
 	r.POST("/login", func(c *gin.Context) {
 		var userLoginInfo dao.RegisterModel
 
@@ -65,26 +71,53 @@ func InitWebHtml() (err error) {
 
 	})
 
+	//首页
 	r.GET("/index", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "/index.html", nil)
+		c.HTML(http.StatusOK, "/index.html", gin.H{
+			"title": "首页",
+		})
 	})
 
 	r.GET("/register", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "/register.html", nil)
+		c.HTML(http.StatusOK, "/register.html", gin.H{
+			"title": "注册",
+		})
 	})
 
+	//提交注册信息
 	r.POST("/register", func(c *gin.Context) {
 		var reg dao.RegisterModel
 		reg.Joinip = c.ClientIP()
 		_ = c.ShouldBind(&reg)
-		fmt.Printf("%#v\n", reg)
-		ok := controller.UserRegister(&reg)
-		if ok {
-			c.JSON(http.StatusOK, gin.H{
-				"username": reg.Username,
-				"password": reg.Password,
-			})
+		cookie, ok, message := controller.UserRegister(&reg)
+		if !ok {
+			result = util.RetunMsgFunc(1, message, nil)
+		} else {
+			result = util.RetunMsgFunc(0, message, cookie)
 		}
+		c.JSON(http.StatusOK, result)
+	})
+
+	//忘记密码
+	r.GET("/changePassword", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "/changePassword.html", gin.H{
+			"title": "修改密码",
+		})
+	})
+
+	//忘记密码
+	r.POST("/changePassword", func(c *gin.Context) {
+		var userLoginInfo dao.RegisterModel
+
+		_ = c.ShouldBind(&userLoginInfo)
+		cookie, ok, message := controller.UserLoginChange(&userLoginInfo)
+		if !ok {
+			result = util.RetunMsgFunc(1, message, nil)
+		} else {
+			result = util.RetunMsgFunc(0, message, cookie)
+		}
+		c.JSON(http.StatusOK, result)
+
 	})
 
 	//3.运行
