@@ -41,7 +41,7 @@ func InitWebHtml() (err error) {
 		},
 	})
 
-	r.LoadHTMLGlob("tpl/*")
+	r.LoadHTMLGlob("html/*")
 	r.Static(config.GetEnv().Static, "./static")
 	r.GET("/", func(c *gin.Context) {
 
