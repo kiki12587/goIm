@@ -14,16 +14,18 @@ var result *util.ReturnMsg
 
 func Validate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//这一部分可以替换成从session/cookie中获取，
-		username := c.Query("username")
-		password := c.Query("password")
 
-		if username == "ft" && password == "123" {
-			//c.JSON(http.StatusOK, gin.H{"message": "身份验证成功"})
-			c.Next() //该句可以省略，写出来只是表明可以进行验证下一步中间件，不写，也是内置会继续访问下一个中间件的
+		//这一部分可以替换成从session/cookie中获取，
+		if cookie, err := c.Cookie("user"); err == nil {
+			if cookie == "true" { //校验是否有key为auth,value为true的cookie
+				c.Next()
+				return
+			}
 		} else {
 			c.Abort()
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "身份验证失败"})
+			c.HTML(http.StatusOK, "/login.html", gin.H{
+				"title": "登录",
+			})
 			return // return也是可以省略的，执行了abort操作，会内置在中间件defer前，return，写出来也只是解答为什么Abort()之后，还能执行返回JSON数据
 		}
 	}
@@ -33,7 +35,7 @@ func Validate() gin.HandlerFunc {
 func InitWebHtml() (err error) {
 
 	r := gin.Default()
-	//r.Use(Validate()) //使用validate()中间件身份验证
+
 	//防止字符被转义
 	r.SetFuncMap(template.FuncMap{
 		"safe": func(str string) template.HTML {
@@ -43,10 +45,22 @@ func InitWebHtml() (err error) {
 
 	r.LoadHTMLGlob("html/*")
 	r.Static(config.GetEnv().Static, "./static")
-	r.GET("/", func(c *gin.Context) {
 
-		c.HTML(http.StatusOK, "/index.html", gin.H{
-			"title": "首页",
+	indexGroup := r.Group("/index")
+	indexGroup.Use(Validate()) //使用validate()中间件身份验证
+	{
+
+		//首页
+		indexGroup.GET("/index", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "index/index.html", gin.H{
+				"title": "首页",
+			})
+		})
+	}
+
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "/login.html", gin.H{
+			"title": "登录",
 		})
 	})
 
@@ -69,13 +83,6 @@ func InitWebHtml() (err error) {
 		}
 		c.JSON(http.StatusOK, result)
 
-	})
-
-	//首页
-	r.GET("/index", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "/index.html", gin.H{
-			"title": "首页",
-		})
 	})
 
 	r.GET("/register", func(c *gin.Context) {

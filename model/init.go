@@ -23,10 +23,10 @@ func InitModel() {
 
 	if err != nil {
 		//如果连接失败 尝试重连 让系统等待3秒钟
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 3)
 		tag++
-		//超过三次重连则失败
-		if tag == 3 {
+		//超过60次重连则失败
+		if tag == 60 {
 			fmt.Printf("尝试重连失败,%v次\n", tag)
 			fmt.Println(err)
 

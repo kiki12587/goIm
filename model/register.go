@@ -73,7 +73,7 @@ func ChangeUserInfo(user *dao.RegisterModel) (cookie string, ok bool, message st
 		}
 		cookie = userStatus.Openid
 		ok = true
-		message = "密码修改成功"
+		message = "密码修改成功,跳转到登录"
 	}
 	return
 }

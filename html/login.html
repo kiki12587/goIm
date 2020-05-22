@@ -168,6 +168,9 @@
                         if(res.code == 0){
                             util.setCookie("user", res.data, "d30");
                             layer.msg(res.msg)
+                            self.setInterval(function(){
+                                self.location='./index/index';
+                            },1000)//设置时间
                             return;
                         }
                         if(res.code == 1){
