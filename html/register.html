@@ -101,7 +101,7 @@
                 </div>
             </div>
 
-            <a href="login" class="layui-btn layui-btn-radius" style="width: 98px;
+            <a href="/goim/login" class="layui-btn layui-btn-radius" style="width: 98px;
     margin-left: 262px;
     margin-top: 10px;">返回登录</a>
         </div>
@@ -150,7 +150,7 @@
                      "username":username,
                      "password":password,
                  }
-                 $.post("/register",data,function (res) {
+                 $.post("/goim/register",data,function (res) {
                      if(res.code == 0){
                          util.setCookie("user", res.data, "d30");
                          layer.msg(res.msg)

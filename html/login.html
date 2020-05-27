@@ -101,7 +101,7 @@
                     <button id = "login" class="layui-btn" lay-submit lay-filter="formDemo" style="margin-left: -75px;">登陆</button>
                 </div>
             </div>
-            <a href="/changePassword" class="font-set">忘记密码?</a>  <a href="/register" class="font-set">立即注册</a>
+            <a href="/goim/changePassword" class="font-set">忘记密码?</a>  <a href="/goim/register" class="font-set">立即注册</a>
         </div>
 
     </body>
@@ -160,7 +160,7 @@
                     }
 
                 $.ajax({
-                    url: "/login",
+                    url: "/goim/login",
                     data: post,
                     type: "post",
                     dataType: "json",

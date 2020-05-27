@@ -39,7 +39,7 @@ window.onload=function b(){
 		if(text.value ==''){
             alert('不能发送空消息');
         }else{
-			chat.innerHTML += '<li class="me"><img src="'+'images/own_head.jpg'+'"><span>'+text.value+'</span></li>';
+			chat.innerHTML += '<li class="me"><img src="'+'../static/images/own_head.jpg'+'"><span>'+text.value+'</span></li>';
 			text.value = '';
 			chat.scrollTop=chat.scrollHeight;
 			talk.style.background="#fff";
