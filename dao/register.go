@@ -10,4 +10,6 @@ type RegisterModel struct {
 	Remark        string `json:"remark" column:"remark" form:"remark"`
 	Openid        string `json:"openid" column:"openid" form:"openid"`
 	Status        int    `json:"status" column:"status" form:"status"`
+	Usersig       string `json:"usersig" column:"usersig" form:"usersig"`
+	Expire        int64  `json:"expire" column:"expire" form:"expire"`
 }

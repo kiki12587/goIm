@@ -13,7 +13,6 @@ func UserRegister(data *dao.RegisterModel) (cookie string, ok bool, message stri
 	data.Password = encryptCode
 	cookie, ok, message = model.SaveUserInfo(data)
 	return
-
 }
 
 /**

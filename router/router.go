@@ -1,53 +1,18 @@
 package router
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"goIM/config"
 	"goIM/controller"
 	"goIM/dao"
+	"goIM/middleware"
 	"goIM/util"
 	"html/template"
 	"net/http"
 )
 
 var result *util.ReturnMsg
-
-func Validate() gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		//这一部分可以替换成从session/cookie中获取，
-		if cookie, err := c.Cookie("user"); err == nil {
-			if len(cookie) == 0 { //校验是否有key为auth,value为true的cookie
-				c.Next()
-				return
-			}
-		} else {
-			c.Abort()
-			c.HTML(http.StatusOK, "/login.html", gin.H{
-				"title": "登录",
-			})
-			return // return也是可以省略的，执行了abort操作，会内置在中间件defer前，return，写出来也只是解答为什么Abort()之后，还能执行返回JSON数据
-		}
-	}
-}
-
-func LoginValidate() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		//这一部分可以替换成从session/cookie中获取，
-		if cookie, err := c.Cookie("user"); err == nil {
-			if len(cookie) != 0 {
-				c.Abort()
-				//校验是否有key为auth,value为true的cookie
-				c.HTML(http.StatusOK, "index/index.html", gin.H{
-					"title": "首页",
-				})
-			}
-		} else {
-			c.Next()
-
-		}
-	}
-}
 
 //初始化静态资源以及路由
 func InitWebHtml() (err error) {
@@ -65,7 +30,7 @@ func InitWebHtml() (err error) {
 	r.Static(config.GetEnv().Static, "./static")
 
 	indexGroup := r.Group("/index")
-	indexGroup.Use(Validate()) //使用validate()中间件身份验证
+	indexGroup.Use(middleware.Validate()) //使用validate()中间件身份验证
 	{
 
 		//首页
@@ -77,21 +42,15 @@ func InitWebHtml() (err error) {
 
 	}
 
-	r.GET("/", LoginValidate(), func(c *gin.Context) {
+	r.GET("/", middleware.LoginValidate(), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "/login.html", gin.H{
 			"title": "登录",
 		})
 	})
 
-	r.GET("/login", LoginValidate(), func(c *gin.Context) {
+	r.GET("/login", middleware.LoginValidate(), func(c *gin.Context) {
 		c.HTML(http.StatusOK, "/login.html", gin.H{
 			"title": "登录",
-		})
-	})
-
-	r.GET("/register", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "/register.html", gin.H{
-			"title": "注册",
 		})
 	})
 
@@ -104,10 +63,17 @@ func InitWebHtml() (err error) {
 		if !ok {
 			result = util.RetunMsgFunc(1, "账号或密码错误", nil)
 		} else {
+
 			result = util.RetunMsgFunc(0, "登录成功", cookie)
 		}
 		c.JSON(http.StatusOK, result)
 
+	})
+
+	r.GET("/register", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "/register.html", gin.H{
+			"title": "注册",
+		})
 	})
 
 	//提交注册信息
@@ -147,13 +113,19 @@ func InitWebHtml() (err error) {
 	})
 
 	tengxunGroup := r.Group("/tengxun")
-
 	{
 		//获取用户签名
-		tengxunGroup.GET("/getSig", func(c *gin.Context) {
-			c.HTML(http.StatusOK, "index/index.html", gin.H{
-				"title": "首页",
-			})
+		tengxunGroup.POST("/getSig", func(c *gin.Context) {
+			var userTengXunImInfo dao.TengXunYunIm
+			_ = c.ShouldBind(&userTengXunImInfo)
+			fmt.Println(&userTengXunImInfo)
+			sign, err2 := controller.GetTengXunImSign(&userTengXunImInfo)
+			if err2 != nil {
+				result = util.RetunMsgFunc(1, err2, nil)
+			} else {
+				result = util.RetunMsgFunc(0, err2, sign)
+			}
+			c.JSON(http.StatusOK, result)
 		})
 	}
 
