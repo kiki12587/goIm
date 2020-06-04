@@ -8,7 +8,13 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"goIM/config"
 	"net/http"
+	"strings"
+)
+
+var (
+	build strings.Builder
 )
 
 func Validate() gin.HandlerFunc {
@@ -20,18 +26,15 @@ func Validate() gin.HandlerFunc {
 				c.Next()
 				return
 			} else {
-
 				c.Abort()
-				c.HTML(http.StatusOK, "/login.html", gin.H{
-					"title": "登录",
-				})
+
+				c.Redirect(http.StatusMovedPermanently, GetDomainSubString("/login"))
 				return // return也是可以省略的，执行了abort操作，会内置在中间件defer前，return，写出来也只是解答为什么Abort()之后，还能执行返回JSON数据
 			}
 		} else {
 			c.Abort()
-			c.HTML(http.StatusOK, "/login.html", gin.H{
-				"title": "登录",
-			})
+
+			c.Redirect(http.StatusMovedPermanently, GetDomainSubString("/login"))
 			return // return也是可以省略的，执行了abort操作，会内置在中间件defer前，return，写出来也只是解答为什么Abort()之后，还能执行返回JSON数据
 		}
 	}
@@ -44,13 +47,23 @@ func LoginValidate() gin.HandlerFunc {
 			if len(cookie) != 0 {
 				c.Abort()
 				//校验是否有key为auth,value为true的cookie
-				c.HTML(http.StatusOK, "index/index.html", gin.H{
-					"title": "首页",
-				})
+				c.Redirect(http.StatusMovedPermanently, GetDomainSubString("/index/index"))
+				return
 			}
 		} else {
 			c.Next()
 
 		}
 	}
+}
+
+func GetDomainSubString(router string) string {
+
+	s1 := config.GetEnv().Domain
+	s2 := router
+
+	sList := []string{s1, s2}
+	s := strings.Join(sList, "")
+
+	return s
 }

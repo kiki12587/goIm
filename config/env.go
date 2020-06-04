@@ -7,4 +7,5 @@ var env = Env{
 	Sdkappid:   1400362640,
 	Key:        "34e1bb60f73163964f7a857101e718348faa10de88f3d6ce91e3119a4196b171",
 	Expire:     2592000, //签名过期时间设置成一个月
+	Domain:     "http://goim.test:8080/goim",
 }

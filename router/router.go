@@ -60,6 +60,7 @@ func InitWebHtml() (err error) {
 
 		_ = c.ShouldBind(&userLoginInfo)
 		cookie, ok := controller.UserLoginCheck(&userLoginInfo)
+		fmt.Println(cookie, ok)
 		if !ok {
 			result = util.RetunMsgFunc(1, "账号或密码错误", nil)
 		} else {

@@ -45,13 +45,17 @@ func CheckUserInfo(user *dao.RegisterModel) (cookie string, ok bool) {
 	var userStatus dao.RegisterModel
 	userStatus = dao.RegisterModel{}
 	G_db.Table("goim_users").Select("*").Where("username = ? and password = ?", user.Username, user.Password).Limit(1).Scan(&userStatus)
-	if timeUnix > userStatus.Expire {
-		_ = updateUserSignAndExpire(userStatus.Openid)
 
+	if len(userStatus.Openid) != 0 {
+		if timeUnix > userStatus.Expire {
+			_ = updateUserSignAndExpire(userStatus.Openid)
+		}
+		cookie = userStatus.Openid
+		ok = true
+	} else {
+		cookie = ""
+		ok = false
 	}
-
-	cookie = userStatus.Openid
-	ok = true
 
 	return
 }
@@ -89,10 +93,10 @@ func ChangeUserInfo(user *dao.RegisterModel) (cookie string, ok bool, message st
 
 func updateUserSignAndExpire(openid string) (err error) {
 	var userTengXunImInfo dao.TengXunYunIm
-	userTengXunImInfo.Sdkappid = 1400362640
-	userTengXunImInfo.Key = "34e1bb60f73163964f7a857101e718348faa10de88f3d6ce91e3119a4196b171"
+	userTengXunImInfo.Sdkappid = config.GetEnv().Sdkappid
+	userTengXunImInfo.Key = config.GetEnv().Key
 	userTengXunImInfo.Identifier = openid
-	userTengXunImInfo.Expire = 2592000
+	userTengXunImInfo.Expire = config.GetEnv().Expire
 	sign, err := util.GetTengXunImSign(&userTengXunImInfo)
 	if err != nil {
 		//1.记录日志到mongoDB

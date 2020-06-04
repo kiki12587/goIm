@@ -32,7 +32,7 @@ func InitModel() {
 
 			return
 		} else {
-			fmt.Printf("尝试重连第%v次\n", tag)
+			fmt.Printf("尝试重连mysql第%v次\n", tag)
 			InitModel()
 		}
 		return
