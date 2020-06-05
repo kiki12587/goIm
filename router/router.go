@@ -28,7 +28,6 @@ func InitWebHtml() (err error) {
 
 	r.LoadHTMLGlob("html/*")
 	r.Static(config.GetEnv().Static, "./static")
-
 	indexGroup := r.Group("/index")
 	indexGroup.Use(middleware.Validate()) //使用validate()中间件身份验证
 	{
@@ -64,7 +63,7 @@ func InitWebHtml() (err error) {
 		if !ok {
 			result = util.RetunMsgFunc(1, "账号或密码错误", nil)
 		} else {
-
+			//middleware.SetUserCookieMiddleware(cookie)
 			result = util.RetunMsgFunc(0, "登录成功", cookie)
 		}
 		c.JSON(http.StatusOK, result)
@@ -86,6 +85,8 @@ func InitWebHtml() (err error) {
 		if !ok {
 			result = util.RetunMsgFunc(1, message, nil)
 		} else {
+			//c.SetCookie("user", cookie, 864000, "/goim", "goim.test", false, false)
+			//middleware.SetUserCookieMiddleware(cookie)
 			result = util.RetunMsgFunc(0, message, cookie)
 		}
 		c.JSON(http.StatusOK, result)

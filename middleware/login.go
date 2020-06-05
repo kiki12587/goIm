@@ -7,6 +7,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"goIM/config"
 	"net/http"
@@ -22,7 +23,7 @@ func Validate() gin.HandlerFunc {
 
 		//这一部分可以替换成从session/cookie中获取，
 		if cookie, err := c.Cookie("user"); err == nil {
-			if len(cookie) != 0 { //校验是否有key为auth,value为true的cookie
+			if len(cookie) != 0 && cookie != "null" { //校验是否有key为auth,value为true的cookie
 				c.Next()
 				return
 			} else {
@@ -44,7 +45,7 @@ func LoginValidate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//这一部分可以替换成从session/cookie中获取，
 		if cookie, err := c.Cookie("user"); err == nil {
-			if len(cookie) != 0 {
+			if len(cookie) != 0 && cookie != "null" {
 				c.Abort()
 				//校验是否有key为auth,value为true的cookie
 				c.Redirect(http.StatusMovedPermanently, GetDomainSubString("/index/index"))
@@ -66,4 +67,24 @@ func GetDomainSubString(router string) string {
 	s := strings.Join(sList, "")
 
 	return s
+}
+
+func AccessJsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		w := c.Writer
+		// 处理js-ajax跨域问题
+		w.Header().Set("Access-Control-Allow-Origin", "*") //允许访问所有域
+		w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+		w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Add("Access-Control-Allow-Headers", "Access-Token")
+		c.Next()
+	}
+}
+
+func SetUserCookieMiddleware(cookie string) gin.HandlerFunc {
+	fmt.Println(cookie, 5645645654)
+	return func(c *gin.Context) {
+		c.SetCookie("user", cookie, 864000, "/goim", "goim.test", false, false)
+		c.Next()
+	}
 }

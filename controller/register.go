@@ -12,6 +12,9 @@ func UserRegister(data *dao.RegisterModel) (cookie string, ok bool, message stri
 	encryptCode := util.AesEncrypt(data.Password)
 	data.Password = encryptCode
 	cookie, ok, message = model.SaveUserInfo(data)
+	if ok {
+		cookie = util.AesEncrypt(cookie)
+	}
 	return
 }
 
@@ -23,6 +26,9 @@ func UserLoginCheck(data *dao.RegisterModel) (cookie string, ok bool) {
 	encryptCode := util.AesEncrypt(data.Password)
 	data.Password = encryptCode
 	cookie, ok = model.CheckUserInfo(data)
+	if ok {
+		cookie = util.AesEncrypt(cookie)
+	}
 	return
 
 }
