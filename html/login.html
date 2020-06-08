@@ -166,7 +166,7 @@
                     dataType: "json",
                     success: function (res) {
                         if(res.code == 0){
-                            util.setCookie("user", res.data, "d30");
+                            // util.setCookie("user", res.data, "d30");
                             layer.msg(res.msg)
                             self.setInterval(function(){
                                 self.location='./index/index';

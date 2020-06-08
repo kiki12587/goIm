@@ -1,13 +1,6 @@
-/*
-@Time : 2020/5/28 21:31
-@Author : HP
-@File : login
-@Software: GoLand
-*/
 package middleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"goIM/config"
 	"net/http"
@@ -77,14 +70,6 @@ func AccessJsMiddleware() gin.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Add("Access-Control-Allow-Headers", "Access-Token")
-		c.Next()
-	}
-}
-
-func SetUserCookieMiddleware(cookie string) gin.HandlerFunc {
-	fmt.Println(cookie, 5645645654)
-	return func(c *gin.Context) {
-		c.SetCookie("user", cookie, 864000, "/goim", "goim.test", false, false)
 		c.Next()
 	}
 }
