@@ -32,13 +32,35 @@ func InitWebHtml() (err error) {
 	indexGroup.Use(middleware.Validate()) //使用validate()中间件身份验证
 	{
 
-		//首页
+		//首页信息
 		indexGroup.GET("/index", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "index/index.html", gin.H{
 				"title": "首页",
 			})
 		})
 
+		//获取用户ID 和 签名
+		indexGroup.POST("/getUserInfo", func(c *gin.Context) {
+			var (
+				userInfo *dao.RegisterModel
+				ok       bool
+				message  string
+			)
+
+			if cookie, err := c.Cookie("user"); err == nil {
+				userInfo, ok, message = controller.GetUserIdAndSign(cookie)
+				if !ok {
+					result = util.RetunMsgFunc(1, message, nil)
+				} else {
+					result = util.RetunMsgFunc(0, message, userInfo)
+				}
+			} else {
+				result = util.RetunMsgFunc(1, "签名过期", nil)
+			}
+
+			c.JSON(http.StatusOK, result)
+
+		})
 	}
 
 	r.GET("/", middleware.LoginValidate(), func(c *gin.Context) {

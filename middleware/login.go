@@ -14,22 +14,19 @@ var (
 func Validate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		//这一部分可以替换成从session/cookie中获取，
 		if cookie, err := c.Cookie("user"); err == nil {
-			if len(cookie) != 0 && cookie != "null" { //校验是否有key为auth,value为true的cookie
+			if len(cookie) != 0 && cookie != "null" {
 				c.Next()
 				return
 			} else {
 				c.Abort()
-
 				c.Redirect(http.StatusMovedPermanently, GetDomainSubString("/login"))
 				return // return也是可以省略的，执行了abort操作，会内置在中间件defer前，return，写出来也只是解答为什么Abort()之后，还能执行返回JSON数据
 			}
 		} else {
 			c.Abort()
-
 			c.Redirect(http.StatusMovedPermanently, GetDomainSubString("/login"))
-			return // return也是可以省略的，执行了abort操作，会内置在中间件defer前，return，写出来也只是解答为什么Abort()之后，还能执行返回JSON数据
+			return
 		}
 	}
 }
@@ -40,7 +37,6 @@ func LoginValidate() gin.HandlerFunc {
 		if cookie, err := c.Cookie("user"); err == nil {
 			if len(cookie) != 0 && cookie != "null" {
 				c.Abort()
-				//校验是否有key为auth,value为true的cookie
 				c.Redirect(http.StatusMovedPermanently, GetDomainSubString("/index/index"))
 				return
 			}

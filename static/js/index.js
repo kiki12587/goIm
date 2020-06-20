@@ -151,11 +151,43 @@ require(['tim','cosjs','generateTestUserSig'],function (TIM,COS) {
     });
 
 
-    let login = tim.login({ userID: '1', userSig: 'eJyrVgrxCdYrSy1SslIy0jNQ0gHzM1NS80oy0zLBwoZQweKU7MSCgswUJStDEwMDYzMjMxMDiExqRUFmUSpQ3NTU1MjAACpakpkLFrOwMDczNjIxhpqSmQ40M83AJMok29MxqjLDryhX2zciOCxZ27A02csgJK-cJDi0vNwk1Sjcotip0tFWqRYA-gwvPg__' });
-    login.then(function (imResponse) {
+    var UserInfo;
+    getUserInfo()
 
-        console.log(imResponse.data,555555555); // 登录成功
-    }).catch(function (imError) {
-        console.warn('login error:', imError); // 登录失败的相关信息
-    });
+    // 用户登录
+    function getUserInfo() {
+        $.ajax({
+            url: "./getUserInfo",
+            type: "post",
+            dataType: "json",
+            success: function (res) {
+                if(res.code == 0){
+                    console.log(res)
+                    UserInfo = {
+                        userID: res.data.openid,
+                        userSig:res.data.usersig
+                    }
+
+                    let login = tim.login(UserInfo);
+                    login.then(function (imResponse) {
+
+                    }).catch(function (imError) {
+                        console.warn('login error:', imError); // 登录失败的相关信息
+                    });
+                    return;
+                }
+                if(res.code == 1){
+                    layer.msg(res.msg)
+                    self.setInterval(function(){
+                        self.location='./login';
+                    },1000)//设置时间
+                    return;
+                }
+
+
+            }
+        })
+    };
+
+
 })

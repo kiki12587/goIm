@@ -5,11 +5,15 @@
     {{template "head" .}}
 
     <style type="text/css">
+        .layui-form-label {
+            width: 94px;
+        }
         .container{
+
             width: 420px;
-            height: 339px;
+            height: 798px;
             min-height: 320px;
-            max-height: 366px;
+            max-height: 798px;
             position: absolute;
             top: 0;
             left: 0;
@@ -45,13 +49,7 @@
             padding-left:150px;
             padding-bottom: 15px;
         }
-        .layui-btn{
-            margin-left: -50px;
-            border-radius: 5px;
-            width: 350px;
-            height: 40px;
-            font-size: 15px;
-        }
+
         .verity{
             width: 120px;
         }
@@ -67,12 +65,54 @@
     </style>
 
     <body>
-
+    <form class="layui-form" action="">
         <div class="container">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">昵称</label>
+                <div class="layui-input-inline">
+                    <input type="nick" id = "nick" name="username" required  lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">头像</label>
+                <div class="layui-input-block">
+                    <input type="image" name="avatar" id="avatar" src="" value="" />
+                    <button type="button" class="layui-btn" id="test1">
+                        <i class="layui-icon">&#xe67c;</i>上传图片
+                    </button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">性别</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="sex" value="1" title="男">
+                    <input type="radio" name="sex" value="2" title="女" checked>
+                    <input type="radio" name="sex" value="0" title="隐私">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">个性签名</label>
+                <div class="layui-input-block">
+                    <textarea id="self_signature" name="self_signature" type="text/plain" style="width:99%;height:250px"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-inline">
+                    <input type="email" id = "username" name="username" required  lay-verify="required" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
             <div class="layui-form-item">
                 <label class="layui-form-label">邮箱</label>
                 <div class="layui-input-inline">
-                    <input type="text" id = "username" name="username" required  lay-verify="required" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                    <input type="text" id = "mobile" name="mobile" required  lay-verify="required" placeholder="请输入手机号" autocomplete="off" class="layui-input">
                 </div>
             </div>
 
@@ -95,17 +135,19 @@
                 </div>
             </div>
 
-            <div class="layui-input-block">
+            <div class="layui-form-item">
                 <div class="layui-input-block">
-                <button id="my_button" class="layui-btn" style="margin-left: -207px;">立即注册</button>
+                    <button id="my_button" class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                 </div>
             </div>
 
             <a href="/goim/login" class="layui-btn layui-btn-radius" style="width: 98px;
     margin-left: 262px;
     margin-top: 10px;">返回登录</a>
-        </div>
 
+        </div>
+    </form>
     </body>
 
 
@@ -118,58 +160,72 @@
                 layer = layui.layer;
             });
 
-            $("#my_button").on("click",function () {
-            var value =  $("#code_input").val();
-             var res = verifyCode.validate(value);
-             if(res){
-                 username = $("#username").val().trim()
-                 password = $("#password").val().trim()
 
-                 if (username.length == 0) {
-                     layer.msg("请输入邮箱")
-                     return;
-                 }
+            layui.use('form', function(){
+                var form = layui.form;
 
-                 if(util.checkMail(username) == false){
-                     layer.msg("请输入正确的邮箱格式")
-                     return;
-                 }
+                //监听提交
+                form.on('submit(formDemo)', function(data){
+                    layer.msg(JSON.stringify(data.field));
+                    return false;
+                });
+            });
 
 
-                 if (password.length == 0) {
-                     layer.msg("请输入密码")
-                     return;
-                 }
 
-                 if(util.checkS(password) == false){
-                     layer.msg("密码必须由字母加数字组合")
-                     return;
-                 }
-
-                 var data = {
-                     "username":username,
-                     "password":password,
-                 }
-                 $.post("/goim/register",data,function (res) {
-                     if(res.code == 0){
-
-                         layer.msg(res.msg)
-                         self.setInterval(function(){
-                             self.location='./index/index';
-                         },1000)//设置时间
-                         return;
-                     }
-                     if(res.code == 1){
-                         layer.msg(res.msg)
-                         return;
-                     }
-                 });
-
-             }else{
-                 layer.msg("验证码错误")
-                 return;
-             }
-         })
+         //
+         //    $("#my_button").on("click",function () {
+         //    var value =  $("#code_input").val();
+         //     var res = verifyCode.validate(value);
+         //     if(res){
+         //         username = $("#username").val().trim()
+         //         password = $("#password").val().trim()
+         //
+         //         if (username.length == 0) {
+         //             layer.msg("请输入邮箱")
+         //             return;
+         //         }
+         //
+         //         if(util.checkMail(username) == false){
+         //             layer.msg("请输入正确的邮箱格式")
+         //             return;
+         //         }
+         //
+         //
+         //         if (password.length == 0) {
+         //             layer.msg("请输入密码")
+         //             return;
+         //         }
+         //
+         //         if(util.checkS(password) == false){
+         //             layer.msg("密码必须由字母加数字组合")
+         //             return;
+         //         }
+         //
+         //         var data = {
+         //             "username":username,
+         //             "password":password,
+         //         }
+         //         $.post("/goim/register",data,function (res) {
+         //             if(res.code == 0){
+         //
+         //                 layer.msg(res.msg)
+         //                 self.setInterval(function(){
+         //                     self.location='./index/index';
+         //                 },1000)//设置时间
+         //                 return;
+         //             }
+         //             if(res.code == 1){
+         //                 layer.msg(res.msg)
+         //                 return;
+         //             }
+         //         });
+         //
+         //     }else{
+         //         layer.msg("验证码错误")
+         //         return;
+         //     }
+         // })
 
         })
 

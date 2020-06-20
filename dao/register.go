@@ -1,6 +1,7 @@
 package dao
 
 type RegisterModel struct {
+	Id            int    `json:"id" column:"id" form:"id"`
 	Groupid       int    `json:"groupid" column:"groupid" form:"groupid"`
 	Username      string `json:"username" column:"username" form:"username" `
 	Password      string `json:"password" column:"password" form:"password"`
